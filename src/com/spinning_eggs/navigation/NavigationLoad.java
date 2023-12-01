@@ -2,20 +2,17 @@ package com.spinning_eggs.navigation;
 
 import java.security.SecureRandom;
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.Map;
-
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 
 public class NavigationLoad {
-	public GeoPoint current;
+	public Geo2DPoint current;
 	public Route naviRoute;
+	public float usrDirection;
 	public ArrayList<Route> envRoute;
 	public int num_of_envRoute;
 	
 	public NavigationLoad() {
-		this.current = new GeoPoint();
+		this.current = new Geo2DPoint();
 		this.naviRoute = new Route();
 		this.envRoute = new ArrayList<Route>();
 		
@@ -24,10 +21,10 @@ public class NavigationLoad {
 		for (int i = 0; i < this.num_of_envRoute; i++) {
 			this.envRoute.add(new Route());
 		}
-		
+		this.usrDirection = random.nextFloat(-10, 10);
 	}
 	
-	public NavigationLoad(GeoPoint cur, Route navi, ArrayList<Route> env){
+	public NavigationLoad(Geo2DPoint cur, Route navi, ArrayList<Route> env){
 		this.current = cur;
 		this.naviRoute = navi;
 		this.envRoute = env;
@@ -42,19 +39,21 @@ public class NavigationLoad {
 	}
 	
 	public String getJson() {
-		Gson gson = new GsonBuilder().enableComplexMapKeySerialization().create();
-		Map<String, String> navi = new LinkedHashMap<>();
-		navi.put("pos", this.current.getJson());
-		navi.put("nav", this.naviRoute.getJson());
-		
-		Map<String, String> envr = new LinkedHashMap<>();
-		for(int i = 0; i < this.num_of_envRoute; i++) {
-			envr.put(String.valueOf(i), this.envRoute.get(i).getJson());
-		}
-		String json = gson.toJson(envr);
-		navi.put("env", json);
-		
-		json = gson.toJson(navi);
-		return json;
+		Gson gson = new Gson();
+		return gson.toJson(this);
+	}
+
+	public void step() {
+		SecureRandom  random = new SecureRandom();
+		this.usrDirection = random.nextFloat(-90, 90);
+		this.current.x = random.nextFloat(this.current.x-0.5f,
+													this.current.x+0.5f);
+		this.current.y = random.nextFloat(this.current.y-0.5f,
+													this.current.y+0.5f);
+	}
+	
+	public static void main(String[] args) {
+		NavigationLoad test = new NavigationLoad();
+		System.out.println(test.getJson());		
 	}
 }

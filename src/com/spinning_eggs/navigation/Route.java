@@ -2,37 +2,33 @@ package com.spinning_eggs.navigation;
 
 import java.security.SecureRandom;
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.Map;
-
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 
 public class Route {
-	public ArrayList<GeoPoint> route;
+	public ArrayList<Geo2DPoint> route;
 	public int num_of_node;
 	public Route() {
-		this.route = new ArrayList<GeoPoint>();
+		this.route = new ArrayList<Geo2DPoint>();
 		
 		SecureRandom  random = new SecureRandom ();
 		this.num_of_node = random.nextInt(3, 8);		
 		
 		for (int i = 0; i < this.num_of_node; i++) {
-			this.route.add(new GeoPoint());
+			this.route.add(new Geo2DPoint());
 		}
 	}
 	
-	public Route(ArrayList<GeoPoint> r) {
+	public Route(ArrayList<Geo2DPoint> r) {
 		this.route = r;
 	}
 	
-	public Route addPoint(GeoPoint g) {
+	public Route addGeo2DPoint(Geo2DPoint g) {
 		this.route.add(g);
 		return this;
 	}
 	
-	public Route addPoint(float lat, float lng) {
-		GeoPoint g = new GeoPoint(lat, lng);
+	public Route addGeo2DPoint(Float data1, Float data2) {
+		Geo2DPoint g = new Geo2DPoint(data1, data2);
 		this.route.add(g);
 		return this;
 	}
@@ -42,12 +38,11 @@ public class Route {
 	}
 	
 	public String getJson() {
-		Gson gson = new GsonBuilder().enableComplexMapKeySerialization().create();
-		Map<String, String> route = new LinkedHashMap<>();
-		for(int i = 0; i < this.num_of_node; i++) {
-			route.put(String.valueOf(i), this.route.get(i).getJson());
-		}
-		String json = gson.toJson(route);
-		return json;
+		Gson gson = new Gson();
+		return gson.toJson(this);
+	}
+	public static void main(String[] args) {
+		Route test = new Route();
+		System.out.println(test.getJson());		
 	}
 }

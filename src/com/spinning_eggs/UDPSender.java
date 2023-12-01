@@ -14,6 +14,7 @@ public class UDPSender extends Thread{
 	
 	public String targetIP;
 	public int port;
+	public int targetPort;
 	public String payload;	
 	public boolean received;
 	public String expectedSignal;
@@ -24,17 +25,12 @@ public class UDPSender extends Thread{
 		this.received = false;
 		this.expectedSignal = expectedSignal;
 		this.port = UDPManager.getUnusedPort();
+		this.targetPort = UDPManager.getListenerPort();
 	}
 	
 	public void run() {
 		byte[] payload = this.payload.getBytes(StandardCharsets.UTF_8);
-		DatagramPacket packet = null;
-		try {
-			packet = new DatagramPacket(payload, payload.length, InetAddress.getByName(this.targetIP), UDPManager.getListenerPort());
-		} catch (UnknownHostException e) {
-			UDPManager.stopWaitingSignal(this);
-			e.printStackTrace();			
-		}
+		
 		DatagramSocket socket = null;
 		try {
 			socket = new DatagramSocket(this.port);
@@ -42,20 +38,28 @@ public class UDPSender extends Thread{
 			UDPManager.stopWaitingSignal(this);
 			e.printStackTrace();
 		}
-		while(!received) {
-				try {
-					socket.send(packet);
-					System.out.println("Sending..."+this.payload+" @ "+this.port);
-					Thread.sleep(2000);
-				} catch (IOException e) {
-					UDPManager.stopWaitingSignal(this);
-					e.printStackTrace();
-				} catch (InterruptedException i) {
-					i.printStackTrace();
-				}
-		}
-		socket.close();
 		
+		DatagramPacket packet = null;
+		try {
+			packet = new DatagramPacket(payload, payload.length, InetAddress.getByName(this.targetIP), this.targetPort);
+		} catch (UnknownHostException e) {
+			UDPManager.stopWaitingSignal(this);
+			e.printStackTrace();			
+		}
+		
+		while(!received) {
+			try {
+				socket.send(packet);
+				System.out.println("Sending to "+this.targetPort+" : "+this.payload+" @ "+this.port);
+				Thread.sleep(2000);
+			} catch (IOException e) {
+				UDPManager.stopWaitingSignal(this);
+				e.printStackTrace();
+			} catch (InterruptedException i) {
+				i.printStackTrace();
+			}
+		}
+		socket.close();		
 	}
 	
 	public String toString() {

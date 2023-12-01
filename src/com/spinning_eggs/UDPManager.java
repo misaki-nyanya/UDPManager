@@ -43,7 +43,7 @@ public class UDPManager {
 		if(UDPManager.listener != null) {
 			return UDPManager.listener.port;
 		}else {
-			return -1;
+			return 8099;
 		}
 	}
 	
@@ -94,19 +94,15 @@ public class UDPManager {
 	}
 	
 	public static void main(String[] args) {
-//		NavigationLoad cur_usr = new NavigationLoad();
-//		System.out.println("Sending...");
-//		System.out.println(cur_usr.getJson().replace("\\", ""));
-//		System.out.println();
+		NavigationLoad cur_usr = new NavigationLoad();
+		System.out.println("Sending==============");
+		System.out.println(cur_usr.getJson().replace("\\", ""));
+		System.out.println();
 		
-		UDPManager.createListener();
-		UDPManager.createSender("127.0.0.1", "aaaa", "!!!!");
-		try {
-			Thread.sleep(10000);
-			UDPManager.createSender("127.0.0.1", "!!!!", "aaaa");
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
+		//UDPManager.createListener();
+//		UDPManager.createSender("127.0.0.1", cur_usr.getJson(), "!!!!");
+		UDPSenderSim u = new UDPSenderSim("127.0.0.1", cur_usr, "!!!");
+		u.run();
 		
 	}
 }
